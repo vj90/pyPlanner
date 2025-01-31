@@ -23,6 +23,13 @@ void callRRT() {
   planPath(x_start, y_start, x_end, y_end, grid_x_max, grid_y_max);
 }
 
+void callRRT2(RobotConfig start, RobotConfig end, float grid_x_max,
+              float grid_y_max) {
+  RRT rrt(start, end, grid_x_max, grid_y_max);
+  rrt.runRRT();
+  rrt.printPath();
+}
+
 PYBIND11_MODULE(example, m) {
   m.doc() = "pybind11 example plugin";  // optional module docstring
 

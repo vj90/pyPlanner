@@ -8,7 +8,15 @@ project(Example)
 set(PYBIND11_FINDPYTHON ON)
 find_package(pybind11 CONFIG REQUIRED)
 
+add_library(helper STATIC src/helper.cpp)
+# The following is required because helper is built as a static library, which 
+# will later be linked into a shared library. Thus, helper must be built with 
+# position independent code enabled (-fPIC flag). Shared libraries require 
+# Position-Independent Code so that they can be loaded at different memory addresses.
+set_target_properties(helper PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 
-set(SOURCES src/example.cpp src/helper.cpp src/RRT.cpp)
+set(SOURCES src/example.cpp src/RRT.cpp)
 pybind11_add_module(example ${SOURCES})
+
+target_link_libraries(example PRIVATE helper)

@@ -10,5 +10,5 @@ find_package(pybind11 CONFIG REQUIRED)
 
 
 
-set(SOURCES src/example.cpp)
+set(SOURCES src/example.cpp src/helper.cpp src/RRT.cpp)
 pybind11_add_module(example ${SOURCES})

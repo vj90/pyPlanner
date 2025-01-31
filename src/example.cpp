@@ -1,7 +1,12 @@
 #include <pybind11/pybind11.h>
 
+#include <iostream>
+#include <sstream>
+
 #include "RRT.h"
+#include "RobotConfig.h"
 #include "helper.h"
+namespace py = pybind11;
 
 int add(int i, int j) {
   printMeow();
@@ -23,4 +28,19 @@ PYBIND11_MODULE(example, m) {
 
   m.def("add", &add, "A function that adds two numbers");
   m.def("callRRT", &callRRT, "A function that calls RRT");
+  m.def("callRRT2", &callRRT2, "A function that calls RRT2");
+  py::class_<RobotConfig>(m, "RobotConfig")
+      .def(py::init<const float, const float, const float>(), py::arg("x"),
+           py::arg("y"), py::arg("theta") = NAN)
+      .def(py::init<>())
+      .def_readwrite("x", &RobotConfig::x)
+      .def_readwrite("y", &RobotConfig::y)
+      .def_readwrite("theta", &RobotConfig::theta)
+      .def("__repr__", [](const RobotConfig& a) {
+        std::ostringstream stream;
+        stream << "x = "
+               << std::to_string(a.x) + ", y = " + std::to_string(a.y) +
+                      ", theta =  " + std::to_string(a.theta);
+        return stream.str();
+      });
 }

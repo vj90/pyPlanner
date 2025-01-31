@@ -5,6 +5,8 @@
 #include <memory>
 #include <vector>
 
+#include "RobotConfig.h"
+
 class Node {
  public:
   int x, y;
@@ -45,6 +47,8 @@ class RRT {
 
   RRT(float start_x, float start_y, float end_x, float end_y, float grid_x_max,
       float grid_y_max);
+
+  RRT(RobotConfig start, RobotConfig end, float grid_x_max, float grid_y_max);
 
   ~RRT();
 

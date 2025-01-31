@@ -17,6 +17,16 @@ RRT::RRT(float start_x, float start_y, float end_x, float end_y,
   srand(time(NULL));
 }
 
+RRT::RRT(RobotConfig start, RobotConfig end, float grid_x_max,
+         float grid_y_max) {
+  root = std::make_shared<Node>(start.x, start.y);
+  goal = std::make_shared<Node>(end.x, end.y);
+  nodes.push_back(root);
+  this->grid_x_max = grid_x_max;
+  this->grid_y_max = grid_y_max;
+  srand(time(NULL));
+}
+
 RRT::~RRT() {}
 
 void RRT::runRRT() {

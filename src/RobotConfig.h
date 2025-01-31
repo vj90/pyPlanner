@@ -8,16 +8,12 @@ struct RobotConfig {
   float x{NAN};
   float y{NAN};
   float theta{NAN};
-  RobotConfig(float x, float y, float theta = NAN) {
+  RobotConfig(const float x, const float y, const float theta = NAN) {
     this->x = x;
     this->y = y;
     this->theta = theta;
   }
-  RobotConfig() {
-    this->x = 0;
-    this->y = 0;
-    this->theta = 0;
-  }
+  RobotConfig() {}
   friend std::ostream& operator<<(std::ostream& os, const RobotConfig& config) {
     os << config.x << " " << config.y << " " << config.theta << std::endl;
     return os;

@@ -58,7 +58,25 @@ PYBIND11_MODULE(example, m) {
         return stream.str();
       });
 
+  py::class_<MetaData>(m, "MetaData")
+      .def(py::init<>())
+      .def_readwrite("AlgorithmName", &MetaData::AlgorithmName)
+      .def_readwrite("runtime", &MetaData::runtime)
+      .def_readwrite("all_nodes", &MetaData::all_nodes)
+      .def("__repr__", [](const MetaData& data) {
+        std::ostringstream stream;
+        stream << "[Algorithm Name: " << data.AlgorithmName
+               << ", Runtime: " << data.runtime;
+        if (data.all_nodes.size() > 0) {
+          stream << ", All Nodes: available]";
+        } else {
+          stream << ", All Nodes: not available]";
+          return stream.str();
+        }
+      });
+
   py::class_<PlannerResult>(m, "PlannerResult")
       .def(py::init<>())
-      .def_readwrite("path", &PlannerResult::path);
+      .def_readwrite("path", &PlannerResult::path)
+      .def_readwrite("metadata", &PlannerResult::metadata);
 }

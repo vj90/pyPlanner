@@ -6,12 +6,14 @@
 
 #include "RobotConfig.h"
 struct MetaData {
-  std::string AlgorithmName;
-  float runtime;
+  std::string AlgorithmName{"RRT"};
+  float runtime{-1};  // -1 implies not set
+  // TODO make this a template parameter
+  std::vector<RobotConfig> all_nodes;
 };
 
 struct PlannerResult {
-  // TODO add metadata
+  MetaData metadata;
   std::vector<RobotConfig> path;
 };
 

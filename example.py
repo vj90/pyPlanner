@@ -11,4 +11,6 @@ end = example.RobotConfig(44, 55)
 
 result = example.callRRT2(start, end, 100, 100)
 
-print(type(result.path[0]))
+print(result.path)
+
+print(result.metadata)

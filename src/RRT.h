@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 
+#include "PlannerResult.h"
 #include "RobotConfig.h"
 
 class Node {
@@ -22,6 +23,7 @@ class Node {
   }
 };
 
+// TODO remove
 struct Point {
   float x;
   float y;
@@ -70,12 +72,12 @@ class RRT {
 
   void print_nodes2();
 
-  std::vector<Point> returnPath();
+  std::vector<RobotConfig> returnPath();
 
   void printPath();
 };
 
-void planPath(float x_start, float y_start, float x_end, float y_end,
-              float grid_x_max, float grid_y_max);
+PlannerResult planPath(float x_start, float y_start, float x_end, float y_end,
+                       float grid_x_max, float grid_y_max);
 
 #endif

@@ -111,14 +111,14 @@ void RRT::print_nodes2() {
   std::cout << "]" << std::endl;
 }
 
-std::vector<Point> RRT::returnPath() {
+std::vector<RobotConfig> RRT::returnPath() {
   Nptr parent = goal;
   if (goal->parent == nullptr) {
     // Find node closest to goal
     auto res = nearest_node(goal);
     parent = nodes[res.first];
   }
-  std::vector<Point> path;
+  std::vector<RobotConfig> path;
   while (parent != nullptr) {
     path.emplace_back(parent->x, parent->y);
     parent = parent->parent;
@@ -139,12 +139,15 @@ void RRT::printPath() {
   std::cout << "]" << std::endl;
 }
 
-void planPath(float x_start, float y_start, float x_end, float y_end,
-              float grid_x_max, float grid_y_max) {
+PlannerResult planPath(float x_start, float y_start, float x_end, float y_end,
+                       float grid_x_max, float grid_y_max) {
   RRT rrt_planner(x_start, y_start, x_end, y_end, grid_x_max, grid_y_max);
   rrt_planner.runRRT();
   std::cout << "\n#All nodes\n";
   rrt_planner.print_nodes2();
   std::cout << "\n#Path\n";
   rrt_planner.printPath();
+  PlannerResult result;
+  result.path = rrt_planner.returnPath();
+  return result;
 }

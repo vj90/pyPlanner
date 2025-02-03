@@ -1,8 +1,11 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include <iostream>
 #include <sstream>
+#include <vector>
 
+#include "PlannerResult.h"
 #include "RRT.h"
 #include "RobotConfig.h"
 #include "helper.h"
@@ -23,11 +26,14 @@ void callRRT() {
   planPath(x_start, y_start, x_end, y_end, grid_x_max, grid_y_max);
 }
 
-void callRRT2(RobotConfig start, RobotConfig end, float grid_x_max,
-              float grid_y_max) {
+PlannerResult callRRT2(RobotConfig start, RobotConfig end, float grid_x_max,
+                       float grid_y_max) {
   RRT rrt(start, end, grid_x_max, grid_y_max);
   rrt.runRRT();
   rrt.printPath();
+  PlannerResult result;
+  result.path = rrt.returnPath();
+  return result;
 }
 
 PYBIND11_MODULE(example, m) {
@@ -45,9 +51,14 @@ PYBIND11_MODULE(example, m) {
       .def_readwrite("theta", &RobotConfig::theta)
       .def("__repr__", [](const RobotConfig& a) {
         std::ostringstream stream;
-        stream << "x = "
+        stream << "[x = "
                << std::to_string(a.x) + ", y = " + std::to_string(a.y) +
-                      ", theta =  " + std::to_string(a.theta);
+                      ", theta =  " + std::to_string(a.theta)
+               << "]";
         return stream.str();
       });
+
+  py::class_<PlannerResult>(m, "PlannerResult")
+      .def(py::init<>())
+      .def_readwrite("path", &PlannerResult::path);
 }

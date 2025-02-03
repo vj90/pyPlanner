@@ -62,22 +62,16 @@ PYBIND11_MODULE(PathPlanner, m) {
         return stream.str();
       });
 
+  py::class_<AlgorithmData>(m, "AlgorithmData")
+      .def(py::init<>())
+      .def_readwrite("AlgorithmName", &AlgorithmData::AlgorithmName)
+      .def_readwrite("runtime", &AlgorithmData::runtime);
+
   py::class_<MDRRT>(m, "MetaData")
       .def(py::init<>())
-      .def_readwrite("AlgorithmName", &MDRRT::AlgorithmName)
-      .def_readwrite("runtime", &MDRRT::runtime)
+      .def_readwrite("AlgorithmData", &MDRRT::algorithm_data)
       .def_readwrite("data", &MDRRT::data)
-      .def("__repr__", [](const MDRRT& data) {
-        std::ostringstream stream;
-        stream << "[Algorithm Name: " << data.AlgorithmName
-               << ", Runtime: " << data.runtime;
-        if (data.data.size() > 0) {
-          stream << ", Data: available]";
-        } else {
-          stream << ", Data: not available]";
-        }
-        return stream.str();
-      });
+      .def("__repr__", [](const MDRRT& data) { return data.toStream(); });
 
   py::class_<PRRRT>(m, "PlannerResult")
       .def(py::init<>())

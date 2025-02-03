@@ -10,6 +10,8 @@
 #include "RobotConfig.h"
 #include "helper.h"
 namespace py = pybind11;
+typedef PlannerResult<RRT::RRTMetaData> PRRRT;
+typedef MetaData<RRT::RRTMetaData> MDRRT;
 
 int add(int i, int j) {
   printMeow();
@@ -26,13 +28,14 @@ void callRRT() {
   planPath(x_start, y_start, x_end, y_end, grid_x_max, grid_y_max);
 }
 
-PlannerResult callRRT2(RobotConfig start, RobotConfig end, float grid_x_max,
-                       float grid_y_max) {
+PRRRT callRRT2(RobotConfig start, RobotConfig end, float grid_x_max,
+               float grid_y_max) {
   RRT rrt(start, end, grid_x_max, grid_y_max);
   rrt.runRRT();
   rrt.printPath();
-  PlannerResult result;
+  PRRRT result;
   result.path = rrt.returnPath();
+  result.metadata.data = rrt.getMetaData();
   return result;
 }
 
@@ -59,25 +62,25 @@ PYBIND11_MODULE(PathPlanner, m) {
         return stream.str();
       });
 
-  py::class_<MetaData>(m, "MetaData")
+  py::class_<MDRRT>(m, "MetaData")
       .def(py::init<>())
-      .def_readwrite("AlgorithmName", &MetaData::AlgorithmName)
-      .def_readwrite("runtime", &MetaData::runtime)
-      .def_readwrite("all_nodes", &MetaData::all_nodes)
-      .def("__repr__", [](const MetaData& data) {
+      .def_readwrite("AlgorithmName", &MDRRT::AlgorithmName)
+      .def_readwrite("runtime", &MDRRT::runtime)
+      .def_readwrite("data", &MDRRT::data)
+      .def("__repr__", [](const MDRRT& data) {
         std::ostringstream stream;
         stream << "[Algorithm Name: " << data.AlgorithmName
                << ", Runtime: " << data.runtime;
-        if (data.all_nodes.size() > 0) {
-          stream << ", All Nodes: available]";
+        if (data.data.size() > 0) {
+          stream << ", Data: available]";
         } else {
-          stream << ", All Nodes: not available]";
+          stream << ", Data: not available]";
         }
         return stream.str();
       });
 
-  py::class_<PlannerResult>(m, "PlannerResult")
+  py::class_<PRRRT>(m, "PlannerResult")
       .def(py::init<>())
-      .def_readwrite("path", &PlannerResult::path)
-      .def_readwrite("metadata", &PlannerResult::metadata);
+      .def_readwrite("path", &PRRRT::path)
+      .def_readwrite("metadata", &PRRRT::metadata);
 }

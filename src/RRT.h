@@ -27,6 +27,8 @@ class RRT {
   typedef std::shared_ptr<Node> Nptr;
 
  public:
+  typedef std::pair<RobotConfig, int> MNode;
+  typedef std::vector<MNode> RRTMetaData;
   // TODO make const (also functions)
   Nptr root{nullptr};
   Nptr goal{nullptr};
@@ -65,9 +67,12 @@ class RRT {
   std::vector<RobotConfig> returnPath();
 
   void printPath();
+
+  RRTMetaData getMetaData();
 };
 
-PlannerResult planPath(float x_start, float y_start, float x_end, float y_end,
-                       float grid_x_max, float grid_y_max);
+PlannerResult<RRT::RRTMetaData> planPath(float x_start, float y_start,
+                                         float x_end, float y_end,
+                                         float grid_x_max, float grid_y_max);
 
 #endif

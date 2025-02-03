@@ -139,15 +139,27 @@ void RRT::printPath() {
   std::cout << "]" << std::endl;
 }
 
-PlannerResult planPath(float x_start, float y_start, float x_end, float y_end,
-                       float grid_x_max, float grid_y_max) {
+RRT::RRTMetaData RRT::getMetaData() {
+  // Todo ADD some way to trace back parent node
+  RRTMetaData data;
+  data.reserve(nodes.size());
+  for (const auto& node : nodes) {
+    data.push_back(std::make_pair(RobotConfig(node->x, node->y), -1));
+  }
+  return data;
+}
+
+PlannerResult<RRT::RRTMetaData> planPath(float x_start, float y_start,
+                                         float x_end, float y_end,
+                                         float grid_x_max, float grid_y_max) {
   RRT rrt_planner(x_start, y_start, x_end, y_end, grid_x_max, grid_y_max);
   rrt_planner.runRRT();
   std::cout << "\n#All nodes\n";
   rrt_planner.print_nodes2();
   std::cout << "\n#Path\n";
   rrt_planner.printPath();
-  PlannerResult result;
+  PlannerResult<RRT::RRTMetaData> result;
   result.path = rrt_planner.returnPath();
+  result.metadata.data = rrt_planner.getMetaData();
   return result;
 }

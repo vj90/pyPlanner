@@ -5,15 +5,17 @@
 #include <vector>
 
 #include "RobotConfig.h"
+template <typename T>
 struct MetaData {
   std::string AlgorithmName{"RRT"};
   float runtime{-1};  // -1 implies not set
   // TODO make this a template parameter
-  std::vector<RobotConfig> all_nodes;
+  T data;
 };
 
+template <typename T>
 struct PlannerResult {
-  MetaData metadata;
+  MetaData<T> metadata;
   std::vector<RobotConfig> path;
 };
 

@@ -13,4 +13,4 @@ result = planner.callRRT2(start, end, 100, 100)
 
 print(result.path)
 
-print(result.metadata)
+print(result.metadata.data)

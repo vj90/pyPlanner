@@ -11,11 +11,11 @@
 class Node {
  public:
   int x, y;
-  std::shared_ptr<Node> parent;
+  int parent_idx;
   Node(int x, int y) {
     this->x = x;
     this->y = y;
-    this->parent = nullptr;
+    this->parent_idx = -1;
   }
   friend std::ostream& operator<<(std::ostream& os, const Node& node) {
     os << node.x << " " << node.y;
@@ -24,7 +24,7 @@ class Node {
 };
 
 class RRT {
-  typedef std::shared_ptr<Node> Nptr;
+  typedef std::unique_ptr<Node> Nptr;
 
  public:
   typedef std::pair<RobotConfig, int> MNode;
@@ -50,15 +50,15 @@ class RRT {
 
   Nptr sample();
 
-  bool isValid(const Nptr node);
+  bool isValid(const Nptr& node);
 
-  std::pair<std::size_t, float> nearest_node(const Nptr sample);
+  std::pair<std::size_t, float> nearest_node(const Nptr& sample);
 
-  float distanceToGoal(const Nptr sample);
+  float distanceToGoal(const Nptr& sample);
 
-  void gotoNode(const Nptr nearest_node, Nptr sample, float dist);
+  void gotoNode(const Nptr& nearest_node, Nptr& sample, float dist);
 
-  void add_edge(Nptr parent, Nptr child);
+  void add_edge(const int parent_idx, Nptr& child);
 
   void print_nodes();
 

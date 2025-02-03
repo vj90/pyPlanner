@@ -23,16 +23,6 @@ class Node {
   }
 };
 
-// TODO remove
-struct Point {
-  float x;
-  float y;
-  Point(float a_x, float a_y) {
-    x = a_x;
-    y = a_y;
-  }
-};
-
 class RRT {
   typedef std::shared_ptr<Node> Nptr;
 

@@ -1,15 +1,15 @@
-import build.example as example
+import build.PathPlanner as planner
 
-print(example.add(1, 2))
+print(planner.add(1, 2))
 
-example.callRRT()
+planner.callRRT()
 
-start = example.RobotConfig(2, 3)
+start = planner.RobotConfig(2, 3)
  
-end = example.RobotConfig(44, 55)
+end = planner.RobotConfig(44, 55)
 
 
-result = example.callRRT2(start, end, 100, 100)
+result = planner.callRRT2(start, end, 100, 100)
 
 print(result.path)
 

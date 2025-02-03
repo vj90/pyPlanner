@@ -36,8 +36,9 @@ PlannerResult callRRT2(RobotConfig start, RobotConfig end, float grid_x_max,
   return result;
 }
 
-PYBIND11_MODULE(example, m) {
-  m.doc() = "pybind11 example plugin";  // optional module docstring
+PYBIND11_MODULE(PathPlanner, m) {
+  m.doc() =
+      "A Path Planning Module written in C++";  // optional module docstring
 
   m.def("add", &add, "A function that adds two numbers");
   m.def("callRRT", &callRRT, "A function that calls RRT");
@@ -71,6 +72,7 @@ PYBIND11_MODULE(example, m) {
           stream << ", All Nodes: available]";
         } else {
           stream << ", All Nodes: not available]";
+          // TODO fix this
           return stream.str();
         }
       });

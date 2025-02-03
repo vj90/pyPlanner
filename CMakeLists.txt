@@ -16,7 +16,7 @@ add_library(helper STATIC src/helper.cpp)
 set_target_properties(helper PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 
-set(SOURCES src/example.cpp src/RRT.cpp)
-pybind11_add_module(example ${SOURCES})
+set(SOURCES src/PathPlanner.cpp src/RRT.cpp)
+pybind11_add_module(PathPlanner ${SOURCES})
 
-target_link_libraries(example PRIVATE helper)
+target_link_libraries(PathPlanner PRIVATE helper)

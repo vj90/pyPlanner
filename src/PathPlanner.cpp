@@ -72,9 +72,8 @@ PYBIND11_MODULE(PathPlanner, m) {
           stream << ", All Nodes: available]";
         } else {
           stream << ", All Nodes: not available]";
-          // TODO fix this
-          return stream.str();
         }
+        return stream.str();
       });
 
   py::class_<PlannerResult>(m, "PlannerResult")

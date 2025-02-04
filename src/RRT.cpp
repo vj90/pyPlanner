@@ -103,18 +103,6 @@ void RRT::print_nodes() const {
   }
 }
 
-void RRT::print_nodes2() const {
-  std::cout << "nodes_x = [";
-  for (int i = 0; i < nodes.size(); i++) {
-    std::cout << nodes[i]->x << ",";
-  }
-  std::cout << "]" << std::endl << "nodes_y = [";
-  for (int i = 0; i < nodes.size(); i++) {
-    std::cout << nodes[i]->y << ",";
-  }
-  std::cout << "]" << std::endl;
-}
-
 std::vector<RobotConfig> RRT::returnPath() const {
   std::vector<RobotConfig> path;
   int parent_idx = -1;
@@ -157,15 +145,10 @@ RRT::RRTMetaData RRT::getMetaData() const {
   return data;
 }
 
-PlannerResult<RRT::RRTMetaData> planPath(float x_start, float y_start,
-                                         float x_end, float y_end,
+PlannerResult<RRT::RRTMetaData> planPath(RobotConfig start, RobotConfig end,
                                          float grid_x_max, float grid_y_max) {
-  RRT rrt_planner(x_start, y_start, x_end, y_end, grid_x_max, grid_y_max);
+  RRT rrt_planner(start, end, grid_x_max, grid_y_max);
   rrt_planner.runRRT();
-  std::cout << "\n#All nodes\n";
-  rrt_planner.print_nodes2();
-  std::cout << "\n#Path\n";
-  rrt_planner.printPath();
   PlannerResult<RRT::RRTMetaData> result;
   result.path = rrt_planner.returnPath();
   result.metadata.data = rrt_planner.getMetaData();

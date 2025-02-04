@@ -9,7 +9,7 @@ start = planner.RobotConfig(2, 3)
 end = planner.RobotConfig(44, 55)
 
 
-result = planner.callRRT2(start, end, 100, 100)
+result = planner.planPath(start, end, 100, 100)
 
 print(result.path)
 

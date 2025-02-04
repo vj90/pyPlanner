@@ -43,8 +43,6 @@ class RRT {
 
   void print_nodes() const;
 
-  void print_nodes2() const;
-
   std::vector<RobotConfig> returnPath() const;
 
   void printPath() const;
@@ -66,8 +64,7 @@ class RRT {
   bool isValid(const Nptr& node) const;
 };
 
-PlannerResult<RRT::RRTMetaData> planPath(float x_start, float y_start,
-                                         float x_end, float y_end,
+PlannerResult<RRT::RRTMetaData> planPath(RobotConfig start, RobotConfig end,
                                          float grid_x_max, float grid_y_max);
 
 #endif

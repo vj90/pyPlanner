@@ -25,7 +25,9 @@ void callRRT() {
   float y_end = 100;
   float grid_x_max = 100;
   float grid_y_max = 100;
-  planPath(x_start, y_start, x_end, y_end, grid_x_max, grid_y_max);
+  RobotConfig start(x_start, y_start);
+  RobotConfig end(x_end, y_end);
+  planPath(start, end, grid_x_max, grid_y_max);
 }
 
 PRRRT callRRT2(RobotConfig start, RobotConfig end, float grid_x_max,
@@ -46,6 +48,7 @@ PYBIND11_MODULE(PathPlanner, m) {
   m.def("add", &add, "A function that adds two numbers");
   m.def("callRRT", &callRRT, "A function that calls RRT");
   m.def("callRRT2", &callRRT2, "A function that calls RRT2");
+  m.def("planPath", &planPath, "A function that plans path");
   py::class_<RobotConfig>(m, "RobotConfig")
       .def(py::init<const float, const float, const float>(), py::arg("x"),
            py::arg("y"), py::arg("theta") = NAN)

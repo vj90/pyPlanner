@@ -29,8 +29,6 @@ RRT::RRT(RobotConfig start, RobotConfig end, float grid_x_max,
   srand(time(NULL));
 }
 
-RRT::~RRT() {}
-
 void RRT::runRRT() {
   int ctr = 0;
   while (ctr < max_itr) {
@@ -38,7 +36,7 @@ void RRT::runRRT() {
     Nptr sample = this->sample();
     // check it is valid
     if (isValid(sample)) {
-      auto res = nearest_node(sample);
+      const auto res = nearest_node(sample);
       const auto& [parent_node_idx, dist] = res;
       gotoNode(nodes[parent_node_idx], sample, dist);
       add_edge(parent_node_idx, sample);
@@ -55,13 +53,13 @@ void RRT::runRRT() {
   }
 }
 
-RRT::Nptr RRT::sample() {
-  int x = rand() % (int)grid_x_max;
-  int y = rand() % (int)grid_y_max;
+RRT::Nptr RRT::sample() const {
+  const int x = rand() % (int)grid_x_max;
+  const int y = rand() % (int)grid_y_max;
   return std::make_unique<Node>(x, y);
 }
 
-bool RRT::isValid(const Nptr& node) {
+bool RRT::isValid(const Nptr& node) const {
   if (node->x < 0 || node->x > grid_x_max || node->y < 0 ||
       node->y > grid_y_max) {
     return false;
@@ -69,7 +67,7 @@ bool RRT::isValid(const Nptr& node) {
   return true;
 }
 
-std::pair<std::size_t, float> RRT::nearest_node(const Nptr& sample) {
+std::pair<std::size_t, float> RRT::nearest_node(const Nptr& sample) const {
   float min_dist = INT16_MAX;
   std::size_t min_index = 0;
   for (std::size_t i = 0; i < nodes.size(); i++) {
@@ -82,11 +80,11 @@ std::pair<std::size_t, float> RRT::nearest_node(const Nptr& sample) {
   return std::make_pair(min_index, min_dist);
 }
 
-float RRT::distanceToGoal(const Nptr& sample) {
+float RRT::distanceToGoal(const Nptr& sample) const {
   return std::hypot(sample->x - goal->x, sample->y - goal->y);
 }
 
-void RRT::gotoNode(const Nptr& nearest_node, Nptr& sample, float dist) {
+void RRT::gotoNode(const Nptr& nearest_node, Nptr& sample, float dist) const {
   float t = 1;
   if (dist > step_size) {
     t = this->step_size / dist;
@@ -95,17 +93,17 @@ void RRT::gotoNode(const Nptr& nearest_node, Nptr& sample, float dist) {
   sample->x = t * (sample->x - nearest_node->x) + nearest_node->x;
 }
 
-void RRT::add_edge(const int parent_idx, Nptr& child) {
+void RRT::add_edge(const int parent_idx, Nptr& child) const {
   child->parent_idx = parent_idx;
 }
 
-void RRT::print_nodes() {
+void RRT::print_nodes() const {
   for (int i = 0; i < nodes.size(); i++) {
     std::cout << *(nodes[i]) << std::endl;
   }
 }
 
-void RRT::print_nodes2() {
+void RRT::print_nodes2() const {
   std::cout << "nodes_x = [";
   for (int i = 0; i < nodes.size(); i++) {
     std::cout << nodes[i]->x << ",";
@@ -117,7 +115,7 @@ void RRT::print_nodes2() {
   std::cout << "]" << std::endl;
 }
 
-std::vector<RobotConfig> RRT::returnPath() {
+std::vector<RobotConfig> RRT::returnPath() const {
   std::vector<RobotConfig> path;
   int parent_idx = -1;
 
@@ -135,7 +133,7 @@ std::vector<RobotConfig> RRT::returnPath() {
   return path;
 }
 
-void RRT::printPath() {
+void RRT::printPath() const {
   auto path = returnPath();
   std::cout << "path_x = [";
   for (const auto& pt : path) {
@@ -148,7 +146,7 @@ void RRT::printPath() {
   std::cout << "]" << std::endl;
 }
 
-RRT::RRTMetaData RRT::getMetaData() {
+RRT::RRTMetaData RRT::getMetaData() const {
   // Todo ADD some way to trace back parent node
   RRTMetaData data;
   data.reserve(nodes.size());

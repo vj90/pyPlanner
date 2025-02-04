@@ -29,14 +29,9 @@ class RRT {
  public:
   typedef std::pair<RobotConfig, int> MNode;
   typedef std::vector<MNode> RRTMetaData;
-  // TODO make const (also functions)
   Nptr root{nullptr};
   Nptr goal{nullptr};
-  float grid_x_max = -1;
-  float grid_y_max = -1;
-  float step_size = 80;
-  float max_itr = 100;
-  float goal_threshold_dist = 1;
+
   std::vector<Nptr> nodes;
 
   RRT(float start_x, float start_y, float end_x, float end_y, float grid_x_max,
@@ -44,31 +39,31 @@ class RRT {
 
   RRT(RobotConfig start, RobotConfig end, float grid_x_max, float grid_y_max);
 
-  ~RRT();
-
   void runRRT();
 
-  Nptr sample();
+  void print_nodes() const;
 
-  bool isValid(const Nptr& node);
+  void print_nodes2() const;
 
-  std::pair<std::size_t, float> nearest_node(const Nptr& sample);
+  std::vector<RobotConfig> returnPath() const;
 
-  float distanceToGoal(const Nptr& sample);
+  void printPath() const;
 
-  void gotoNode(const Nptr& nearest_node, Nptr& sample, float dist);
+  RRTMetaData getMetaData() const;
 
-  void add_edge(const int parent_idx, Nptr& child);
-
-  void print_nodes();
-
-  void print_nodes2();
-
-  std::vector<RobotConfig> returnPath();
-
-  void printPath();
-
-  RRTMetaData getMetaData();
+ private:
+  float grid_x_max{-1};
+  float grid_y_max{-1};
+  // TODO make static constexpr and fix pybindings
+  const float step_size{80};
+  const float max_itr{100};
+  const float goal_threshold_dist{1};
+  Nptr sample() const;
+  std::pair<std::size_t, float> nearest_node(const Nptr& sample) const;
+  float distanceToGoal(const Nptr& sample) const;
+  void gotoNode(const Nptr& nearest_node, Nptr& sample, float dist) const;
+  void add_edge(const int parent_idx, Nptr& child) const;
+  bool isValid(const Nptr& node) const;
 };
 
 PlannerResult<RRT::RRTMetaData> planPath(float x_start, float y_start,

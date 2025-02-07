@@ -15,7 +15,7 @@ class Obstacle {
   // TODO change to pure virtual function and fix pybindings
   virtual bool collision(std::vector<RobotConfig> path_samples);
 
- private:
+ protected:
   float center_x{NAN};
   float center_y{NAN};
 };

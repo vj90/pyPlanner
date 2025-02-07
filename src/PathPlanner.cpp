@@ -5,14 +5,14 @@
 #include <sstream>
 #include <vector>
 
+#include "Obstacle.h"
 #include "PlannerResult.h"
 #include "RRT.h"
 #include "RobotConfig.h"
 #include "helper.h"
-#include "obstacle.h"
 namespace py = pybind11;
-typedef PlannerResult<RRT::RRTMetaData> PRRRT;
-typedef MetaData<RRT::RRTMetaData> MDRRT;
+using PRRRT = PlannerResult<RRT::RRTMetaData>;
+using MDRRT = MetaData<RRT::RRTMetaData>;
 
 int add(int i, int j) {
   printMeow();
@@ -28,7 +28,8 @@ void callRRT() {
   float grid_y_max = 100;
   RobotConfig start(x_start, y_start);
   RobotConfig end(x_end, y_end);
-  planPath(start, end, grid_x_max, grid_y_max);
+  types::pyobstacle circular_obstacles;
+  planPath(start, end, grid_x_max, grid_y_max, circular_obstacles);
 }
 
 PRRRT callRRT2(RobotConfig start, RobotConfig end, float grid_x_max,
@@ -84,14 +85,14 @@ PYBIND11_MODULE(PathPlanner, m) {
 
   py::class_<Obstacle>(m, "Obstacle")
       .def(py::init<>())
-      .def(py::init<float, float>(), py::arg("x"), py::arg("y"))
+      .def(py::init<const float, const float>(), py::arg("x"), py::arg("y"))
       .def("setCenter", &Obstacle::setCenter, py::arg("x"), py::arg("y"))
       .def("getCenter", &Obstacle::getCenter)
       .def("collision", &Obstacle::collision);
 
   py::class_<CircularObstacle, Obstacle>(m, "CircularObstacle")
-      .def(py::init<float, float, float>(), py::arg("x"), py::arg("y"),
-           py::arg("radius"))
+      .def(py::init<const float, const float, const float>(), py::arg("x"),
+           py::arg("y"), py::arg("radius"))
       .def("getRadius", &CircularObstacle::getRadius)
       .def("setRadius", &CircularObstacle::setRadius);
 }

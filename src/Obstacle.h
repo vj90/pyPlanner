@@ -9,11 +9,11 @@
 class Obstacle {
  public:
   Obstacle();
-  Obstacle(float x, float y);
-  void setCenter(float x, float y);
+  Obstacle(const float x, const float y);
+  void setCenter(const float x, const float y);
   std::pair<float, float> getCenter();
   // TODO change to pure virtual function and fix pybindings
-  virtual bool collision(std::vector<RobotConfig> path_samples);
+  virtual bool collision(const std::vector<RobotConfig>& path_samples) const;
 
  protected:
   float center_x{NAN};
@@ -22,10 +22,10 @@ class Obstacle {
 
 class CircularObstacle : public Obstacle {
  public:
-  CircularObstacle(float x, float y, float radius);
+  CircularObstacle(const float x, const float y, const float radius);
   float getRadius();
-  void setRadius(float radius);
-  bool collision(std::vector<RobotConfig> path_samples) override;
+  void setRadius(const float radius);
+  bool collision(const std::vector<RobotConfig>& path_samples) const override;
 
  private:
   float radius{NAN};

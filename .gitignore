@@ -2,3 +2,4 @@
 build/
 pyvenv/
 __pycache__/
+*temp*

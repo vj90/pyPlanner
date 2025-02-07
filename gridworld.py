@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import build.PathPlanner as planner
 
 # Params 
 GRID_HEIGHT = 100
@@ -26,9 +27,29 @@ plt.xlim(0, GRID_WIDTH)
 plt.ylim(0, GRID_HEIGHT)
 for object in objects:
     object_center, object_size = object
-    plt.gca().add_patch(plt.Circle(object_center, object_size, color='r', fill=True))
+    plt.gca().add_patch(plt.Circle(object_center, object_size, color='cyan', fill=True))
 plt.gca().add_patch(plt.Circle(start_state, 1, color='g', fill=True))
-plt.gca().add_patch(plt.Circle(goal_state, 1, color='b', fill=True))
+plt.gca().add_patch(plt.Circle(goal_state, 1, color='r', fill=True))
 
 
+# Call RRT
+start = planner.RobotConfig(*start_state)
+end = planner.RobotConfig(*goal_state)
+result = planner.planPath(start, end, GRID_HEIGHT, GRID_WIDTH)
+
+# Display all nodes, connected to their parents
+metadata = result.metadata.data
+for node_metadata in metadata:
+    node, parent_idx = node_metadata
+    print(node)
+    if parent_idx != -1:
+        parent = metadata[parent_idx][0]
+        plt.plot([node.x, parent.x], [node.y, parent.y], 'b--')
+
+# Display path
+path = result.path
+for i in range(len(path) - 1):
+    plt.plot([path[i].x, path[i+1].x], [path[i].y, path[i+1].y], 'g-')
+   
+ 
 plt.show()

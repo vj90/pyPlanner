@@ -9,6 +9,7 @@
 #include "RRT.h"
 #include "RobotConfig.h"
 #include "helper.h"
+#include "obstacle.h"
 namespace py = pybind11;
 typedef PlannerResult<RRT::RRTMetaData> PRRRT;
 typedef MetaData<RRT::RRTMetaData> MDRRT;
@@ -80,4 +81,17 @@ PYBIND11_MODULE(PathPlanner, m) {
       .def(py::init<>())
       .def_readwrite("path", &PRRRT::path)
       .def_readwrite("metadata", &PRRRT::metadata);
+
+  py::class_<Obstacle>(m, "Obstacle")
+      .def(py::init<>())
+      .def(py::init<float, float>(), py::arg("x"), py::arg("y"))
+      .def("setCenter", &Obstacle::setCenter, py::arg("x"), py::arg("y"))
+      .def("getCenter", &Obstacle::getCenter)
+      .def("collision", &Obstacle::collision);
+
+  py::class_<CircularObstacle, Obstacle>(m, "CircularObstacle")
+      .def(py::init<float, float, float>(), py::arg("x"), py::arg("y"),
+           py::arg("radius"))
+      .def("getRadius", &CircularObstacle::getRadius)
+      .def("setRadius", &CircularObstacle::setRadius);
 }

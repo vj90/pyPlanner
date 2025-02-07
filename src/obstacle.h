@@ -11,8 +11,9 @@ class Obstacle {
   Obstacle();
   Obstacle(float x, float y);
   void setCenter(float x, float y);
-  std::pair<float, float> Obstacle::getCenter();
-  virtual bool collision(std::vector<RobotConfig> path_samples) = 0;
+  std::pair<float, float> getCenter();
+  // TODO change to pure virtual function and fix pybindings
+  virtual bool collision(std::vector<RobotConfig> path_samples);
 
  private:
   float center_x{NAN};

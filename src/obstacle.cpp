@@ -11,6 +11,8 @@ void Obstacle::setCenter(float x, float y) {
 
 std::pair<float, float> Obstacle::getCenter() { return {center_x, center_y}; }
 
+bool Obstacle::collision(std::vector<RobotConfig> path_samples) { return true; }
+
 CircularObstacle::CircularObstacle(float x, float y, float radius)
     : Obstacle(x, y), radius(radius) {}
 

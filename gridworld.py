@@ -15,7 +15,8 @@ objects = []
 for i in range(NUM_OBJECTS):
     object_size = np.random.randint(MIN_OBJECT_SIZE, MAX_OBJECT_SIZE)
     object_center = (np.random.randint(GRID_HEIGHT), np.random.randint(GRID_WIDTH))
-    objects.append((object_center, object_size))
+    objects.append((*object_center, object_size))
+
 
 # Randomly sample start and goal states
 start_state = (np.random.randint(GRID_HEIGHT), np.random.randint(GRID_WIDTH))
@@ -26,17 +27,18 @@ plt.figure()
 plt.xlim(0, GRID_WIDTH)
 plt.ylim(0, GRID_HEIGHT)
 for object in objects:
-    object_center, object_size = object
-    plt.gca().add_patch(plt.Circle(object_center, object_size, color='cyan', fill=True))
+    object_x, object_y, object_size = object
+    plt.gca().add_patch(plt.Circle((object_x,object_y), object_size, color='cyan', fill=True))
 plt.gca().add_patch(plt.Circle(start_state, 1, color='g', fill=True))
 plt.gca().add_patch(plt.Circle(goal_state, 1, color='r', fill=True))
 
 
 # Call RRT
+print("Calling RRT")
 start = planner.RobotConfig(*start_state)
 end = planner.RobotConfig(*goal_state)
-result = planner.planPath(start, end, GRID_HEIGHT, GRID_WIDTH)
-
+result = planner.planPath(start, end, GRID_HEIGHT, GRID_WIDTH, objects)
+print("RRT Done")
 # Display all nodes, connected to their parents
 metadata = result.metadata.data
 for node_metadata in metadata:

@@ -2,11 +2,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import build.PathPlanner as planner
 
-# Params 
+# Params
 GRID_HEIGHT = 100
 GRID_WIDTH = 100
-MAX_OBJECT_SIZE = 20
-MIN_OBJECT_SIZE = 5
+MAX_OBJECT_SIZE = 11
+MIN_OBJECT_SIZE = 10
 NUM_OBJECTS = 10
 
 # create objects
@@ -14,13 +14,15 @@ NUM_OBJECTS = 10
 objects = []
 for i in range(NUM_OBJECTS):
     object_size = np.random.randint(MIN_OBJECT_SIZE, MAX_OBJECT_SIZE)
-    object_center = (np.random.randint(GRID_HEIGHT), np.random.randint(GRID_WIDTH))
+    object_center = (5+np.random.randint(GRID_HEIGHT-10), 5+np.random.randint(GRID_WIDTH-10))
     objects.append((*object_center, object_size))
 
 
 # Randomly sample start and goal states
-start_state = (np.random.randint(GRID_HEIGHT), np.random.randint(GRID_WIDTH))
-goal_state = (np.random.randint(GRID_HEIGHT), np.random.randint(GRID_WIDTH))
+#start_state = (np.random.randint(GRID_HEIGHT), np.random.randint(GRID_WIDTH))
+#goal_state = (np.random.randint(GRID_HEIGHT), np.random.randint(GRID_WIDTH))
+start_state = (0, 0)
+goal_state = (100, 100)
 
 # display grid with objects
 plt.figure()
@@ -28,13 +30,15 @@ plt.xlim(0, GRID_WIDTH)
 plt.ylim(0, GRID_HEIGHT)
 for object in objects:
     object_x, object_y, object_size = object
-    plt.gca().add_patch(plt.Circle((object_x,object_y), object_size, color='cyan', fill=True))
-plt.gca().add_patch(plt.Circle(start_state, 1, color='g', fill=True))
-plt.gca().add_patch(plt.Circle(goal_state, 1, color='r', fill=True))
+    plt.gca().add_patch(
+        plt.Circle((object_x, object_y), object_size, color="cyan", fill=True)
+    )
+plt.gca().add_patch(plt.Circle(start_state, 1, color="g", fill=True))
+plt.gca().add_patch(plt.Circle(goal_state, 1, color="r", fill=True))
 
 
 # Call RRT
-print("Calling RRT")
+"""print("Calling RRT")
 start = planner.RobotConfig(*start_state)
 end = planner.RobotConfig(*goal_state)
 result = planner.planPath(start, end, GRID_HEIGHT, GRID_WIDTH, objects)
@@ -52,6 +56,17 @@ for node_metadata in metadata:
 path = result.path
 for i in range(len(path) - 1):
     plt.plot([path[i].x, path[i+1].x], [path[i].y, path[i+1].y], 'g-')
-   
- 
+"""
+
+# Call Astar
+print("Calling Astar")
+start = planner.RobotConfig(*start_state)
+end = planner.RobotConfig(*goal_state)
+result = planner.planPathAStar(start, end, GRID_HEIGHT, GRID_WIDTH, objects)
+print("Astar Done")
+# Display path
+path = result
+for i in range(len(path) - 1):
+    plt.plot([path[i].x, path[i + 1].x], [path[i].y, path[i + 1].y], "g-", marker="o")
+
 plt.show()

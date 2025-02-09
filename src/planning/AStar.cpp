@@ -7,12 +7,17 @@ AStar::AStar(const RobotConfig& start, const RobotConfig& end,
     : m_grid_x_max_(grid_x_max), m_grid_y_max_(grid_y_max) {
   m_grid_descretization_step_x_ = grid_x_max / m_grid_resolution_x_;
   m_grid_descretization_step_y_ = grid_y_max / m_grid_resolution_y_;
+  // TODO change to closest node finder
+  // for hybrid A*, this becomes a func that does nothing
   m_root_node_ = findClosestGraphNode({start.x, start.y});
   m_goal_node_ = findClosestGraphNode({end.x, end.y});
 
-  // TODO Fix this (use std::optional?)
   m_root_node_.cost_to_come = 0;
   m_goal_node_.cost_to_go = 0;
+
+  // TODO replace with cost updater
+  // cost to go remains the same
+  // cost to go is length of the actual path
   updateCostToGo(m_root_node_);
   updateCostToCome(m_goal_node_, m_root_node_);
 }
@@ -30,10 +35,13 @@ void AStar::runAStar() {
     if (current == m_goal_node_) {
       break;
     }
+    // TODO get neighbours is the key function here, for hybrid A* this is a
+    // curve
     auto neighbors = getNeighbors(current);
     for (auto& neighbor : neighbors) {
       //  Note that if the heuristic is consistent, we never need to visit an
       //  already visited node again
+      // TODO replace this, comparison of nodes is the most important here
       if (nodeInList(neighbor, m_closed_list_).first) {
         continue;
       }
@@ -59,6 +67,7 @@ void AStar::runAStar() {
 }
 
 std::vector<RobotConfig> AStar::returnPath() const {
+  // TODO This needs a path interpolator somewhere
   std::vector<RobotConfig> path;
   // start with the node with the lowest cost_to_go
   const auto it = std::min_element(m_closed_list_.begin(), m_closed_list_.end(),

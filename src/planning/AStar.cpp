@@ -20,11 +20,11 @@ AStar::AStar(const RobotConfig& start, const RobotConfig& end,
 void AStar::runAStar() {
   // TODO does this need to be a member function?
   closed_list.clear();
-  std::vector<NodeWithCost> open_list;
+  std::vector<GraphNode> open_list;
   open_list.push_back(root_node);
   while (!open_list.empty()) {
     sortList(open_list);
-    NodeWithCost current = open_list.back();
+    GraphNode current = open_list.back();
     open_list.pop_back();
     closed_list.push_back(current);
     if (current == goal_node) {
@@ -77,14 +77,16 @@ std::vector<RobotConfig> AStar::returnPath() const {
   return path;
 }
 
-void AStar::add_obstacle(std::unique_ptr<Obstacle> obstacle) {}
+void AStar::addObstacle(std::unique_ptr<Obstacle> obstacle) {
+  obstacle_list.push_back(std::move(obstacle));
+}
 
-NodeWithCost AStar::findClosestGraphNode(const Node& node) const {
+GraphNode AStar::findClosestGraphNode(const Node& node) const {
   // "first" node is 0,0
   // "last" node is grid_x_max, grid_y_max
   // points are snapped to the nearest grid point
   const auto& [nearest_x, nearest_y] = snapToGrid(node.x, node.y);
-  NodeWithCost nearest_node;
+  GraphNode nearest_node;
 
   nearest_node.x = nearest_x;
   nearest_node.y = nearest_y;
@@ -106,16 +108,16 @@ std::pair<float, float> AStar::snapToGrid(float x, float y) const {
   return {snapped_x, snapped_y};
 }
 
-void AStar::sortList(std::vector<NodeWithCost>& list) const {
+void AStar::sortList(std::vector<GraphNode>& list) const {
   std::sort(list.begin(), list.end(),
-            [](const NodeWithCost& a, const NodeWithCost& b) {
+            [](const GraphNode& a, const GraphNode& b) {
               return a.cost() > b.cost();
             });
 }
 
-std::vector<NodeWithCost> AStar::getNeighbors(const NodeWithCost& node) const {
+std::vector<GraphNode> AStar::getNeighbors(const GraphNode& node) const {
   // Every node has max 9 neighboring nodes
-  std::vector<NodeWithCost> neighbors;
+  std::vector<GraphNode> neighbors;
   const auto parent_idx = closed_list.size() - 1;
   constexpr int num_neighbours = 9;
   const std::array<float, 3> del_x{-grid_descretization_step_x, 0.0,
@@ -133,7 +135,7 @@ std::vector<NodeWithCost> AStar::getNeighbors(const NodeWithCost& node) const {
       const float xc = x + del_x[i];
       const float yc = y + del_x[j];
       if (xc <= grid_x_max && xc >= 0 && yc <= grid_y_max && yc >= 0) {
-        NodeWithCost node;
+        GraphNode node;
         node.x = xc;
         node.y = yc;
         node.parent_idx = parent_idx;
@@ -145,25 +147,24 @@ std::vector<NodeWithCost> AStar::getNeighbors(const NodeWithCost& node) const {
   return neighbors;
 }
 
-void AStar::updateCostToCome(NodeWithCost& child,
-                             const NodeWithCost& parent) const {
+void AStar::updateCostToCome(GraphNode& child, const GraphNode& parent) const {
   const float collision_cost = 0.0;  // TODO implement this
   const float ctc = std::hypot(child.x - parent.x, child.y - parent.y) +
                     parent.cost_to_come + collision_cost;
   child.cost_to_come = ctc;
 }
 
-void AStar::updateCostToGo(NodeWithCost& node) const {
+void AStar::updateCostToGo(GraphNode& node) const {
   node.cost_to_go = std::hypot(node.x - goal_node.x, node.y - goal_node.y);
 }
 
-void AStar::updateCost(NodeWithCost& node, const NodeWithCost& parent) const {
+void AStar::updateCost(GraphNode& node, const GraphNode& parent) const {
   updateCostToCome(node, parent);
   updateCostToGo(node);
 }
 
 std::pair<bool, int> AStar::nodeInList(
-    const NodeWithCost& node, const std::vector<NodeWithCost>& list) const {
+    const GraphNode& node, const std::vector<GraphNode>& list) const {
   for (int i = 0; i < list.size(); i++) {
     if (node == list[i]) {
       return {true, i};
@@ -176,11 +177,10 @@ std::vector<RobotConfig> planPathAStar(RobotConfig start, RobotConfig end,
                                        float grid_x_max, float grid_y_max,
                                        types::pyobstacle& circular_obstacles) {
   AStar astar_planner(start, end, grid_x_max, grid_y_max);
-  /* for (const auto& obstacle : circular_obstacles) {
-     const auto& [x, y, center] = obstacle;
-     astar_planner.add_obstacle(
-         std::make_unique<CircularObstacle>(x, y, center));
-   }*/
+  for (const auto& obstacle : circular_obstacles) {
+    const auto& [x, y, center] = obstacle;
+    astar_planner.addObstacle(std::make_unique<CircularObstacle>(x, y, center));
+  }
 
   astar_planner.runAStar();
   std::vector<RobotConfig> result;

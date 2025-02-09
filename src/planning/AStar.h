@@ -11,12 +11,12 @@
 #include "PlannerResult.h"
 #include "RobotConfig.h"
 
-class NodeWithCost : public Node {
+class GraphNode : public Node {
  public:
   float cost_to_come{INFINITY};
   float cost_to_go{INFINITY};
   float cost() const { return cost_to_come + cost_to_go; }
-  friend std::ostream& operator<<(std::ostream& os, const NodeWithCost& node) {
+  friend std::ostream& operator<<(std::ostream& os, const GraphNode& node) {
     os << "x: " << node.x << " y: " << node.y
        << " cost_to_come: " << node.cost_to_come
        << " cost_to_go: " << node.cost_to_go << " cost: " << node.cost()
@@ -30,20 +30,18 @@ class AStar {
   AStar(const RobotConfig& start, const RobotConfig& end,
         const float grid_x_max, const float grid_y_max);
   void runAStar();
-  NodeWithCost goal_node;
-  NodeWithCost root_node;
-  // void print_nodes() const;
+  GraphNode goal_node;
+  GraphNode root_node;
+  // void printNodes() const;
   std::vector<RobotConfig> returnPath() const;
   // void printPath() const;
   // TODO extract out to base class
-  void add_obstacle(std::unique_ptr<Obstacle> obstacle);
+  void addObstacle(std::unique_ptr<Obstacle> obstacle);
 
   using AStarMetaData = int;
 
  private:
-  // std::vector<std::unique_ptr<Node>> nodes;
-  // std::unique_ptr<Node> root;
-  // std::unique_ptr<Node> goal;
+  // Private properties
   const float grid_x_max{NAN};
   float grid_descretization_step_x{NAN};
   const float grid_y_max{NAN};
@@ -51,20 +49,28 @@ class AStar {
   static constexpr float goal_threshold_dist{1};
   static constexpr float grid_resolution_x{20};
   static constexpr float grid_resolution_y{20};
+  static constexpr float m_relative_collision_cost_{1000};
+  std::vector<GraphNode> closed_list_;
 
-  std::vector<NodeWithCost> closed_list;
-  NodeWithCost findClosestGraphNode(const Node& node) const;
-  std::vector<NodeWithCost> getNeighbors(const NodeWithCost& node) const;
-  void updateCostToCome(NodeWithCost& child, const NodeWithCost& parent) const;
-  void updateCostToGo(NodeWithCost& node) const;
-  void updateCost(NodeWithCost& node, const NodeWithCost& parent) const;
+  // Private methods
+  ///@brief Find the closest node snapped to the graph to the given node
+  /// @param node input node whose closest graph node is to be found
+  GraphNode findClosestGraphNode(const Node& node) const;
+
+  /// @brief Find the neighbors of a given graph node in the graph
+  /// @param node input graph node whose neighbors are to be found
+  /// @return
+  std::vector<GraphNode> getNeighbors(const GraphNode& node) const;
+  void updateCostToCome(GraphNode& child, const GraphNode& parent) const;
+  void updateCostToGo(GraphNode& node) const;
+  void updateCost(GraphNode& node, const GraphNode& parent) const;
 
   std::vector<std::unique_ptr<Obstacle>> obstacle_list;
-  std::pair<bool, int> nodeInList(const NodeWithCost& node,
-                                  const std::vector<NodeWithCost>& list) const;
+  std::pair<bool, int> nodeInList(const GraphNode& node,
+                                  const std::vector<GraphNode>& list) const;
   // Function to snap a point to the nearest grid point
   std::pair<float, float> snapToGrid(float x, float y) const;
-  void sortList(std::vector<NodeWithCost>& list) const;
+  void sortList(std::vector<GraphNode>& list) const;
 };
 
 std::vector<RobotConfig> planPathAStar(RobotConfig start, RobotConfig end,

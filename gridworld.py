@@ -38,7 +38,7 @@ plt.gca().add_patch(plt.Circle(goal_state, 1, color="r", fill=True))
 
 
 # Call RRT
-"""print("Calling RRT")
+print("Calling RRT")
 start = planner.RobotConfig(*start_state)
 end = planner.RobotConfig(*goal_state)
 result = planner.planPath(start, end, GRID_HEIGHT, GRID_WIDTH, objects)
@@ -56,7 +56,7 @@ for node_metadata in metadata:
 path = result.path
 for i in range(len(path) - 1):
     plt.plot([path[i].x, path[i+1].x], [path[i].y, path[i+1].y], 'g-')
-"""
+
 
 # Call Astar
 print("Calling Astar")

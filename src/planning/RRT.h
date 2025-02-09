@@ -5,32 +5,13 @@
 #include <memory>
 #include <vector>
 
+#include "Node.h"
 #include "Obstacle.h"
 #include "PlannerResult.h"
 #include "RobotConfig.h"
 
-namespace types {
-using pyobstacle = std::vector<std::tuple<float, float, float>>;
-}
-
-class Node {
- public:
-  int x, y;
-  int parent_idx;
-  Node(int x, int y) {
-    this->x = x;
-    this->y = y;
-    this->parent_idx = -1;
-  }
-  friend std::ostream& operator<<(std::ostream& os, const Node& node) {
-    os << node.x << " " << node.y;
-    return os;
-  }
-};
-
 class RRT {
-  using Nptr = std::unique_ptr<Node>;
-
+  // TODO do not use Nptr
  public:
   using MNode = std::pair<RobotConfig, int>;
   using RRTMetaData = std::vector<MNode>;

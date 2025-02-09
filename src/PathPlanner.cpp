@@ -5,6 +5,7 @@
 #include <sstream>
 #include <vector>
 
+#include "AStar.h"
 #include "Obstacle.h"
 #include "PlannerResult.h"
 #include "RRT.h"
@@ -51,6 +52,8 @@ PYBIND11_MODULE(PathPlanner, m) {
   m.def("callRRT", &callRRT, "A function that calls RRT");
   m.def("callRRT2", &callRRT2, "A function that calls RRT2");
   m.def("planPath", &planPath, "A function that plans path");
+  m.def("planPathAStar", &planPathAStar,
+        "A function that plans path with A Star");
   py::class_<RobotConfig>(m, "RobotConfig")
       .def(py::init<const float, const float, const float>(), py::arg("x"),
            py::arg("y"), py::arg("theta") = NAN)

@@ -27,7 +27,7 @@ class GraphNode : public Node {
 
 class AStar {
  public:
-  // Public properties
+  // Public methods
   ///@brief Constructor
   ///@param start Starting configuration of the robot
   ///@param end Ending configuration of the robot
@@ -53,18 +53,18 @@ class AStar {
 
  private:
   // Private properties
-  GraphNode goal_node;
-  GraphNode root_node;
-  const float grid_x_max{NAN};
-  float grid_descretization_step_x{NAN};
-  const float grid_y_max{NAN};
-  float grid_descretization_step_y{NAN};
-  static constexpr float goal_threshold_dist{1};
-  static constexpr float grid_resolution_x{20};
-  static constexpr float grid_resolution_y{20};
+  GraphNode m_goal_node_;
+  GraphNode m_root_node_;
+  const float m_grid_x_max_{NAN};
+  float m_grid_descretization_step_x_{NAN};
+  const float m_grid_y_max_{NAN};
+  float m_grid_descretization_step_y_{NAN};
+  static constexpr float m_goal_threshold_dist_{1};
+  static constexpr float m_grid_resolution_x_{20};
+  static constexpr float m_grid_resolution_y_{20};
   static constexpr float m_relative_collision_cost_{1000};
-  std::vector<GraphNode> closed_list_;
-  std::vector<std::unique_ptr<Obstacle>> obstacle_list;
+  std::vector<GraphNode> m_closed_list_;
+  std::vector<std::unique_ptr<Obstacle>> m_obstacle_list_;
 
   // Private methods
   ///@brief Find the closest node snapped to the graph to the given node

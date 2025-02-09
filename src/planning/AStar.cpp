@@ -4,37 +4,37 @@
 
 AStar::AStar(const RobotConfig& start, const RobotConfig& end,
              const float grid_x_max, const float grid_y_max)
-    : grid_x_max(grid_x_max), grid_y_max(grid_y_max) {
-  grid_descretization_step_x = grid_x_max / grid_resolution_x;
-  grid_descretization_step_y = grid_y_max / grid_resolution_y;
-  root_node = findClosestGraphNode({start.x, start.y});
-  goal_node = findClosestGraphNode({end.x, end.y});
+    : m_grid_x_max_(grid_x_max), m_grid_y_max_(grid_y_max) {
+  m_grid_descretization_step_x_ = grid_x_max / m_grid_resolution_x_;
+  m_grid_descretization_step_y_ = grid_y_max / m_grid_resolution_y_;
+  m_root_node_ = findClosestGraphNode({start.x, start.y});
+  m_goal_node_ = findClosestGraphNode({end.x, end.y});
 
   // TODO Fix this (use std::optional?)
-  root_node.cost_to_come = 0;
-  goal_node.cost_to_go = 0;
-  updateCostToGo(root_node);
-  updateCostToCome(goal_node, root_node);
+  m_root_node_.cost_to_come = 0;
+  m_goal_node_.cost_to_go = 0;
+  updateCostToGo(m_root_node_);
+  updateCostToCome(m_goal_node_, m_root_node_);
 }
 
 void AStar::runAStar() {
   // TODO does this need to be a member function?
-  closed_list.clear();
+  m_closed_list_.clear();
   std::vector<GraphNode> open_list;
-  open_list.push_back(root_node);
+  open_list.push_back(m_root_node_);
   while (!open_list.empty()) {
     sortList(open_list);
     GraphNode current = open_list.back();
     open_list.pop_back();
-    closed_list.push_back(current);
-    if (current == goal_node) {
+    m_closed_list_.push_back(current);
+    if (current == m_goal_node_) {
       break;
     }
     auto neighbors = getNeighbors(current);
     for (auto& neighbor : neighbors) {
       //  Note that if the heuristic is consistent, we never need to visit an
       //  already visited node again
-      if (nodeInList(neighbor, closed_list).first) {
+      if (nodeInList(neighbor, m_closed_list_).first) {
         continue;
       }
       // Doing this here instead of while generating neighbors to avoid extra
@@ -50,8 +50,8 @@ void AStar::runAStar() {
       } else {
         open_list.push_back(neighbor);
       }
-      if (neighbor == goal_node) {
-        closed_list.push_back(neighbor);
+      if (neighbor == m_goal_node_) {
+        m_closed_list_.push_back(neighbor);
         break;
       }
     }
@@ -61,15 +61,14 @@ void AStar::runAStar() {
 std::vector<RobotConfig> AStar::returnPath() const {
   std::vector<RobotConfig> path;
   // start with the node with the lowest cost_to_go
-  const auto it =
-      std::min_element(closed_list.begin(), closed_list.end(),
-                       [](const NodeWithCost& a, const NodeWithCost& b) {
-                         return a.cost_to_go < b.cost_to_go;
-                       });
+  const auto it = std::min_element(m_closed_list_.begin(), m_closed_list_.end(),
+                                   [](const GraphNode& a, const GraphNode& b) {
+                                     return a.cost_to_go < b.cost_to_go;
+                                   });
   path.emplace_back(it->x, it->y);
   int parent_idx = it->parent_idx;
   while (parent_idx != -1) {
-    const auto& parent_node = closed_list[parent_idx];
+    const auto& parent_node = m_closed_list_[parent_idx];
     path.emplace_back(parent_node.x, parent_node.y);
     parent_idx = parent_node.parent_idx;
   }
@@ -78,7 +77,7 @@ std::vector<RobotConfig> AStar::returnPath() const {
 }
 
 void AStar::addObstacle(std::unique_ptr<Obstacle> obstacle) {
-  obstacle_list.push_back(std::move(obstacle));
+  m_obstacle_list_.push_back(std::move(obstacle));
 }
 
 GraphNode AStar::findClosestGraphNode(const Node& node) const {
@@ -96,14 +95,14 @@ GraphNode AStar::findClosestGraphNode(const Node& node) const {
 // Function to snap a point to the nearest grid point
 std::pair<float, float> AStar::snapToGrid(float x, float y) const {
   // Snap x and y to the nearest grid point
-  float snapped_x =
-      std::round(x / grid_descretization_step_x) * grid_descretization_step_x;
-  float snapped_y =
-      std::round(y / grid_descretization_step_y) * grid_descretization_step_y;
+  float snapped_x = std::round(x / m_grid_descretization_step_x_) *
+                    m_grid_descretization_step_x_;
+  float snapped_y = std::round(y / m_grid_descretization_step_y_) *
+                    m_grid_descretization_step_y_;
 
   // Ensure the snapped points don't exceed max boundaries
-  snapped_x = std::min(snapped_x, std::floor(grid_x_max));
-  snapped_y = std::min(snapped_y, std::floor(grid_y_max));
+  snapped_x = std::min(snapped_x, std::floor(m_grid_x_max_));
+  snapped_y = std::min(snapped_y, std::floor(m_grid_y_max_));
 
   return {snapped_x, snapped_y};
 }
@@ -118,12 +117,12 @@ void AStar::sortList(std::vector<GraphNode>& list) const {
 std::vector<GraphNode> AStar::getNeighbors(const GraphNode& node) const {
   // Every node has max 9 neighboring nodes
   std::vector<GraphNode> neighbors;
-  const auto parent_idx = closed_list.size() - 1;
+  const auto parent_idx = m_closed_list_.size() - 1;
   constexpr int num_neighbours = 9;
-  const std::array<float, 3> del_x{-grid_descretization_step_x, 0.0,
-                                   grid_descretization_step_x};
-  const std::array<float, 3> del_y{-grid_descretization_step_y, 0.0,
-                                   grid_descretization_step_y};
+  const std::array<float, 3> del_x{-m_grid_descretization_step_x_, 0.0,
+                                   m_grid_descretization_step_x_};
+  const std::array<float, 3> del_y{-m_grid_descretization_step_y_, 0.0,
+                                   m_grid_descretization_step_y_};
 
   const auto x = node.x;
   const auto y = node.y;
@@ -134,7 +133,7 @@ std::vector<GraphNode> AStar::getNeighbors(const GraphNode& node) const {
       }
       const float xc = x + del_x[i];
       const float yc = y + del_x[j];
-      if (xc <= grid_x_max && xc >= 0 && yc <= grid_y_max && yc >= 0) {
+      if (xc <= m_grid_x_max_ && xc >= 0 && yc <= m_grid_y_max_ && yc >= 0) {
         GraphNode node;
         node.x = xc;
         node.y = yc;
@@ -155,7 +154,8 @@ void AStar::updateCostToCome(GraphNode& child, const GraphNode& parent) const {
 }
 
 void AStar::updateCostToGo(GraphNode& node) const {
-  node.cost_to_go = std::hypot(node.x - goal_node.x, node.y - goal_node.y);
+  node.cost_to_go =
+      std::hypot(node.x - m_goal_node_.x, node.y - m_goal_node_.y);
 }
 
 void AStar::updateCost(GraphNode& node, const GraphNode& parent) const {

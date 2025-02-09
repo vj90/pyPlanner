@@ -18,7 +18,7 @@ AStar::AStar(const RobotConfig& start, const RobotConfig& end,
 }
 
 void AStar::runAStar() {
-  // TODO does this need to be a member function?
+  // TODO does this need to be a member?
   m_closed_list_.clear();
   std::vector<GraphNode> open_list;
   open_list.push_back(m_root_node_);

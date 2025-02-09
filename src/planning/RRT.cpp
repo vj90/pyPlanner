@@ -14,8 +14,8 @@ RRT::RRT(float start_x, float start_y, float end_x, float end_y,
 
   Nptr root_sample = std::make_unique<Node>(start_x, start_y);
   nodes.push_back(std::move(root_sample));
-  this->grid_x_max = grid_x_max;
-  this->grid_y_max = grid_y_max;
+  this->m_grid_x_max_ = grid_x_max;
+  this->m_grid_y_max_ = grid_y_max;
   srand(time(NULL));
 }
 
@@ -25,15 +25,15 @@ RRT::RRT(RobotConfig& start, RobotConfig& end, float grid_x_max,
   goal = std::make_unique<Node>(end.x, end.y);
   Nptr root_sample = std::make_unique<Node>(start.x, start.y);
   nodes.push_back(std::move(root));
-  this->grid_x_max = grid_x_max;
-  this->grid_y_max = grid_y_max;
+  this->m_grid_x_max_ = grid_x_max;
+  this->m_grid_y_max_ = grid_y_max;
   srand(time(NULL));
 }
 
 void RRT::runRRT() {
   int ctr = 0;
   int valid_ctr = 0;
-  while (ctr < max_itr && valid_ctr < max_valid_itr) {
+  while (ctr < m_max_itr_ && valid_ctr < max_valid_itr) {
     ctr++;
     Nptr sample = this->sample();
     // check it is valid. TODO is this required?
@@ -61,14 +61,14 @@ void RRT::runRRT() {
 }
 
 Nptr RRT::sample() const {
-  const int x = rand() % (int)grid_x_max;
-  const int y = rand() % (int)grid_y_max;
+  const int x = rand() % (int)m_grid_x_max_;
+  const int y = rand() % (int)m_grid_y_max_;
   return std::make_unique<Node>(x, y);
 }
 
 bool RRT::isValid(const Nptr& node) const {
-  if (node->x < 0 || node->x > grid_x_max || node->y < 0 ||
-      node->y > grid_y_max) {
+  if (node->x < 0 || node->x > m_grid_x_max_ || node->y < 0 ||
+      node->y > m_grid_y_max_) {
     return false;
   }
   return true;
@@ -121,8 +121,8 @@ float RRT::distanceToGoal(const Nptr& sample) const {
 
 void RRT::gotoNode(const Nptr& nearest_node, Nptr& sample, float dist) const {
   float t = 1;
-  if (dist > step_size) {
-    t = this->step_size / dist;
+  if (dist > m_step_size_) {
+    t = this->m_step_size_ / dist;
   }
   sample->y = t * (sample->y - nearest_node->y) + nearest_node->y;
   sample->x = t * (sample->x - nearest_node->x) + nearest_node->x;

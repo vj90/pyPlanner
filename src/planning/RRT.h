@@ -38,11 +38,11 @@ class RRT {
   void add_obstacle(std::unique_ptr<Obstacle> obstacle);
 
  private:
-  float grid_x_max{-1};
-  float grid_y_max{-1};
+  float m_grid_x_max_{-1};
+  float m_grid_y_max_{-1};
   // TODO make static constexpr and fix pybindings
-  const float step_size{40};
-  const float max_itr{1000};
+  const float m_step_size_{40};
+  const float m_max_itr_{1000};
   const float max_valid_itr{100};
   const float goal_threshold_dist{1};
   const int num_path_samples{10};

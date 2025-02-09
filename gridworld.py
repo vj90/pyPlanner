@@ -47,7 +47,6 @@ print("RRT Done")
 metadata = result.metadata.data
 for node_metadata in metadata:
     node, parent_idx = node_metadata
-    print(node)
     if parent_idx != -1:
         parent = metadata[parent_idx][0]
         plt.plot([node.x, parent.x], [node.y, parent.y], 'b--')

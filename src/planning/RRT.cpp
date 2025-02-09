@@ -34,6 +34,7 @@ void RRT::runRRT() {
   int ctr = 0;
   int valid_ctr = 0;
   while (ctr < max_itr && valid_ctr < max_valid_itr) {
+    ctr++;
     Nptr sample = this->sample();
     // check it is valid. TODO is this required?
     if (isValid(sample)) {
@@ -56,7 +57,6 @@ void RRT::runRRT() {
         break;
       }
     }
-    ctr++;
   }
 }
 

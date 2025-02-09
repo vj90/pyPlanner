@@ -40,4 +40,9 @@ struct PlannerResult {
   std::vector<RobotConfig> path;
 };
 
+// TODO Put this somewhere it makes sense
+namespace types {
+using pyobstacle = std::vector<std::tuple<float, float, float>>;
+}
+
 #endif  // PLANNER_RESULT_H

@@ -10,13 +10,8 @@
 #include "PlannerResult.h"
 #include "RobotConfig.h"
 
-namespace types {
-using pyobstacle = std::vector<std::tuple<float, float, float>>;
-}
-
 class RRT {
-  using Nptr = std::unique_ptr<Node>;
-
+  // TODO do not use Nptr
  public:
   using MNode = std::pair<RobotConfig, int>;
   using RRTMetaData = std::vector<MNode>;

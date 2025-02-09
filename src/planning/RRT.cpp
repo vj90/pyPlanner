@@ -60,7 +60,7 @@ void RRT::runRRT() {
   }
 }
 
-RRT::Nptr RRT::sample() const {
+Nptr RRT::sample() const {
   const int x = rand() % (int)grid_x_max;
   const int y = rand() % (int)grid_y_max;
   return std::make_unique<Node>(x, y);

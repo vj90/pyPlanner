@@ -63,6 +63,7 @@ class AStar {
   static constexpr float m_grid_resolution_x_{20};
   static constexpr float m_grid_resolution_y_{20};
   static constexpr float m_relative_collision_cost_{1000};
+  static constexpr float m_num_path_samples_{10};
   std::vector<GraphNode> m_closed_list_;
   std::vector<std::unique_ptr<Obstacle>> m_obstacle_list_;
 
@@ -105,6 +106,12 @@ class AStar {
   /// @brief Sort a list of graph nodes according to their total cost
   /// @param list list of graph nodes to be sorted
   void sortList(std::vector<GraphNode>& list) const;
+
+  std::vector<RobotConfig> sampleEdge(const GraphNode& node_start,
+                                      const GraphNode& node_end) const;
+
+  bool isEdgeInCollision(const GraphNode& node_start,
+                         const GraphNode& node_end) const;
 };
 
 std::vector<RobotConfig> planPathAStar(RobotConfig start, RobotConfig end,

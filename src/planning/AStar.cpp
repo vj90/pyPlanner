@@ -147,7 +147,8 @@ std::vector<GraphNode> AStar::getNeighbors(const GraphNode& node) const {
 }
 
 void AStar::updateCostToCome(GraphNode& child, const GraphNode& parent) const {
-  const float collision_cost = 0.0;  // TODO implement this
+  const float collision_cost =
+      isEdgeInCollision(child, parent) ? m_relative_collision_cost_ : 0.0;
   const float ctc = std::hypot(child.x - parent.x, child.y - parent.y) +
                     parent.cost_to_come + collision_cost;
   child.cost_to_come = ctc;
@@ -171,6 +172,31 @@ std::pair<bool, int> AStar::nodeInList(
     }
   }
   return {false, -1};
+}
+
+std::vector<RobotConfig> AStar::sampleEdge(const GraphNode& node_start,
+                                           const GraphNode& node_end) const {
+  std::vector<RobotConfig> samples;
+  samples.reserve(m_num_path_samples_);
+  const float increment = 1.0f / (m_num_path_samples_ - 1);
+  for (int i = 0; i < m_num_path_samples_; i++) {
+    const auto x = i * increment * (node_end.x - node_start.x) + node_start.x;
+    const auto y = i * increment * (node_end.y - node_start.y) + node_start.y;
+    samples.emplace_back(x, y);
+  }
+  return samples;
+}
+
+bool AStar::isEdgeInCollision(const GraphNode& node_start,
+                              const GraphNode& node_end) const {
+  const auto samples = sampleEdge(node_start, node_end);
+
+  for (const auto& obstacle : m_obstacle_list_) {
+    if (obstacle->collision(samples)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 std::vector<RobotConfig> planPathAStar(RobotConfig start, RobotConfig end,

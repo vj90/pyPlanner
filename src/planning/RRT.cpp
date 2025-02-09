@@ -99,7 +99,7 @@ std::vector<RobotConfig> RRT::sampleEdge(const Nptr& node_start,
         i * increment * (node_end->y - node_start->y) + node_start->y;
     samples.emplace_back(x, y);
   }
-  return std::move(samples);
+  return samples;
 }
 
 std::pair<std::size_t, float> RRT::nearest_node(const Nptr& sample) const {
